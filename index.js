@@ -16,3 +16,19 @@ app.post("/slow-order", async (request, reply) => {
 await app.listen({ port: PORT });
 
 console.log(`Server listening on http://localhost:${PORT}`);
+
+
+app.post("/order", async (request, reply) => {
+    const { drinkOrder } = request.body;
+    coffeeQueue.push(drinkOrder);
+    console.log(coffeeQueue.length);
+    reply.send("Drink order added to queue");
+});
+app.get("/process-order", async (request, reply) => {
+    const nextOrder = coffeeQueue.shift();
+    if (nextOrder) {
+        reply.send({ order: nextOrder });
+    } else {
+        reply.send("No drink orders in queue");
+    }
+});
