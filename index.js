@@ -24,6 +24,7 @@ app.post("/order", async (request, reply) => {
     console.log(coffeeQueue.length);
     reply.send("Drink order added to queue");
 });
+
 app.get("/process-order", async (request, reply) => {
     const nextOrder = coffeeQueue.shift();
     if (nextOrder) {
@@ -32,3 +33,8 @@ app.get("/process-order", async (request, reply) => {
         reply.send("No drink orders in queue");
     }
 });
+
+app.get("/order-count", async (request, reply) => {
+    reply.send(`${coffeeQueue.length} drink orders in queue`);
+});
+
