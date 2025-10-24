@@ -1,6 +1,15 @@
 import Fastify from "fastify";
 import formbody from "@fastify/formbody";
 
+import { createClient } from "redis";
+
+const subscriber = createClient();
+await subscriber.connect();
+
+const publisher = createClient();
+await publisher.connect();
+
+
 const app = Fastify();
 const PORT = 3000;
 
@@ -38,3 +47,6 @@ app.get("/order-count", async (request, reply) => {
     reply.send(`${coffeeQueue.length} drink orders in queue`);
 });
 
+await subscriber.subscribe("drink-order", (drinkOrder) => {
+    console.log(`Received a new ${drinkOrder} order.`);
+});
