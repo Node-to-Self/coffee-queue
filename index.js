@@ -9,9 +9,12 @@ await subscriber.connect();
 const publisher = createClient();
 await publisher.connect();
 
+let connection;
 
 const app = Fastify();
 const PORT = 3000;
+
+
 
 await app.register(formbody);
 
@@ -50,3 +53,13 @@ app.get("/order-count", async (request, reply) => {
 await subscriber.subscribe("drink-order", (drinkOrder) => {
     console.log(`Received a new ${drinkOrder} order.`);
 });
+
+async function connect() {
+    try {
+        connection = await amqp.connect("amqp://localhost:5672");
+        channel = await connection.createChannel();
+        await channel.assertQueue("drink-order");
+    } catch (err) {
+        console.error(err);
+    }
+}
