@@ -63,3 +63,7 @@ async function connect() {
         console.error(err);
     }
 }
+
+async function sendOrderData(data) {
+ await channel.sendToQueue("drink-order", Buffer.from(JSON.stringify(data)));
+}
