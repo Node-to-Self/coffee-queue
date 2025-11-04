@@ -17,3 +17,14 @@ async function connect() {
         console.error(err);
     }
 }
+
+await channel.assertQueue("analytics");
+await channel.assertQueue("drink-order");
+
+channel.consume("drink-order", async (data) => {
+    const { content } = data;
+    const { order, customer } = JSON.parse(content.toString());
+    console.log(`${order} being fulfilled for ${customer}`);
+    channel.ack(data);
+    await sendOrderData({ order, customer });
+});
