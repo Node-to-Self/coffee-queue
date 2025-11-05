@@ -17,3 +17,16 @@ async function connect() {
         console.error(err);
     }
 }
+
+const drinkMap = { latte: 0, coffee: 0, cappuccino: 0 };
+await channel.assertQueue("analytics");
+
+channel.consume("analytics", (data) => {
+    const { content } = data;
+    const { order, customer } = JSON.parse(content.toString());
+    if (drinkMap[order] !== undefined) {
+        drinkMap[order]++;
+    }
+    console.log(`${order} being analyzed for ${customer}`);
+    channel.ack(data);
+});
