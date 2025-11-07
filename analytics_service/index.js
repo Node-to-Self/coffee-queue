@@ -30,3 +30,27 @@ channel.consume("analytics", (data) => {
     console.log(`${order} being analyzed for ${customer}`);
     channel.ack(data);
 });
+
+function processDrinkAnalytics() {
+    const FIVE_MINUTES_IN_MILLISECONDS = 5 * 60 * 1000;
+    const TEN_SECONDS_IN_MILLISECONDS = 10000;
+    setInterval(() => {
+        const drinkNames = Object.keys(drinkMap);
+        const totalDrinkCount = drinkNames.reduce((total, drinkName) => {
+            return total + drinkMap[drinkName];
+        }, 0);
+        const drinkPercentages = drinkNames.map((drinkName) => {
+            const percentage =
+                Math.floor((drinkMap[drinkName] / totalDrinkCount) * 100) || 0;
+            return ` ${drinkName}: ${percentage}%`;
+        });
+        console.log(`Drink orders: ${drinkPercentages}`);
+        setTimeout(() => {
+            drinkNames.forEach((drinkName) => {
+                drinkMap[drinkName] = 0;
+            });
+        }, FIVE_MINUTES_IN_MILLISECONDS);
+    }, TEN_SECONDS_IN_MILLISECONDS);
+}
+
+processDrinkAnalytics();
